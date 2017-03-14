@@ -1,2 +1,2 @@
-# tinyrender
-my impl of tinyrender
+# tiny-renderer
+my impl of tinyrenderer
