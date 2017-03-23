@@ -1,14 +1,17 @@
+#include <iostream>
 #include "tgaimage.h"
+int testIntersection(int x0, int y0, int x1, int y1, int yy);
 void line(int x0, int y0, int x1, int y1, TGAImage &image, TGAColor &color);
+void triangle(int x0, int y0, int x1, int y1, int x2, int y2, TGAImage &image, TGAColor &color);
 void test(TGAImage &image);
-void triangle();
+
 
 TGAColor white = TGAColor(255, 255, 255, 255);
 TGAColor red   = TGAColor(255, 0,   0,   255);
+TGAColor green = TGAColor(0,   255, 0,   255);
 
 int main(){
-    TGAImage image(100, 100, TGAImage::RGB);
-    // image.set(52, 41, red);
+    TGAImage image(200, 200, TGAImage::RGB);
     test(image);
     image.flip_vertically();
     image.write_tga_file("output.tga");
@@ -16,14 +19,15 @@ int main(){
 }
 //Line Drawing Algorithm
 void line(int x0, int y0, int x1, int y1, TGAImage &image, TGAColor &color){
-    if(x0 > x1){ 
-        std::swap(x0, x1);
-        std::swap(y0, y1);
-    }
-    bool steep = (std::abs(y1-y0) > x1-x0);
-    if(steep){
+    bool steep = false;
+    if(std::abs(y1-y0) > std::abs(x1-x0)){
         std::swap(x0, y0);
         std::swap(x1, y1);
+        steep = true;
+    }
+    if(x0 > x1){
+        std::swap(x0, x1);
+        std::swap(y0, y1);
     }
     int dx = x1 - x0;
     int dy = y1 - y0;
@@ -39,17 +43,43 @@ void line(int x0, int y0, int x1, int y1, TGAImage &image, TGAColor &color){
 }
 //Scan Line
 void test(TGAImage &image){
-    for (int i=0; i<1000000; i++) {
-        line(13, 20, 80, 40, image, white);
-        line(20, 13, 40, 80, image, red);
-        line(80, 40, 13, 20, image, red);
-    }
+    /*triangle test*/
+    triangle(10, 70, 50, 160, 70, 80, image, red);
+    triangle(180, 50,  150, 1,   70, 180, image, white);
+    triangle(180, 150, 120, 160, 130, 180, image, green);
 }
 
+void triangle(int x0, int y0, int x1, int y1, int x2, int y2, TGAImage &image, TGAColor &color){
+    int top = std::max( std::max(y0, y1), y2);
+    int bot = std::min( std::min(y0, y1), y2);
+    for(int y = top ; y >= bot; y--){
+        int x01, x12, x20;
+        x01 = testIntersection(x0, y0, x1, y1, y);
+        x12 = testIntersection(x1, y1, x2, y2, y);
+        x20 = testIntersection(x2, y2, x0, y0, y);
+        if(x01 == -1)
+            line(x12, y, x20, y, image, color);
+        else if( x12 == -1)    
+            line(x01, y, x20, y, image, color);   
+        else if( x20 == -1)   
+            line(x01, y, x12, y, image, color);
+        else if(x01 == x12 || x01 == x20) line(x12, y, x20, y, image, color);
+        else if (x12 == x20) line(x01, y, x20, y, image, color);         
+    }
+    line(x0, y0, x1, y1, image, color);
+    line(x1, y1, x2, y2, image, color);
+    line(x2, y2, x0, y0, image, color);
+}
 
+int testIntersection(int x0, int y0, int x1, int y1, int yy){
+    int top = std::max(y0, y1);
+    int bot = std::min(y0, y1);
+    if( yy > top || yy < bot){
+        return -1;
+    }else{
+        float t = (x1 - x0)/(float)(y1 - y0);
+        int xx = x0 + t * (yy - y0);
+        return xx;
+    }
 
-
-
-void triangle(){
-    //todo
 }

@@ -27,3 +27,12 @@
 *.exe
 *.out
 *.app
+
+# Output
+*.tga
+
+# IDE
+cmake-build-debug/
+CMakeLists.txt
+.idea
+.vscode
