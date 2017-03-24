@@ -29,6 +29,7 @@
 *.app
 
 # Output
+*.png
 *.tga
 
 # IDE
