@@ -29,11 +29,14 @@
 *.app
 
 # Output
+*.jpg
 *.png
 *.tga
+.DS_Store
 
 # IDE
 cmake-build-debug/
 CMakeLists.txt
 .idea
 .vscode
+
