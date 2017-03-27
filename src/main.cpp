@@ -17,9 +17,11 @@ int main(){
     TGAImage image(width, height, TGAImage::RGB);
     Model model = Model("../obj/african_head/african_head.obj");
     // wireframe(&model,image);
+    /***/
     test(image);
+    /***/ 
     image.flip_vertically();
-    image.write_tga_file("./output1.tga");
+    image.write_tga_file("./output.tga");
     return 0;
 }
 
@@ -35,7 +37,6 @@ void wireframe(Model *model, TGAImage &image){
             v1.y = (v1.y+1.)*height/2.;
             Vec2i vi0 = Vec2i(v0.x , v0.y);
             Vec2i vi1 = Vec2i(v1.x, v1.y);
-
             line(vi0, vi1, image, white); 
         } 
     }
@@ -46,11 +47,13 @@ void test(TGAImage &image){
     Vec2i t0[3] = {Vec2i(10, 70),   Vec2i(50, 160),  Vec2i(70, 80)}; 
     Vec2i t1[3] = {Vec2i(180, 50),  Vec2i(150, 1),   Vec2i(70, 180)}; 
     Vec2i t2[3] = {Vec2i(180, 150), Vec2i(120, 160), Vec2i(130, 180)};
+    Vec2i t3[3] = {Vec2i(180, 160), Vec2i(120, 160), Vec2i(170, 170)};
     triangle(t0[0], t0[1], t0[2], image, red); 
     triangle(t1[0], t1[1], t1[2], image, white); 
     triangle(t2[0], t2[1], t2[2], image, green);
+    triangle(t3[0], t3[1], t3[2], image, red);
 }
-
+//bresenham line drawing algorithm;
 void line(Vec2i p0, Vec2i p1, TGAImage &image, const TGAColor &color){
     bool steep = std::abs(p1.y - p0.y) > std::abs(p1.x - p0.x);
     if(steep){
@@ -71,42 +74,37 @@ void line(Vec2i p0, Vec2i p1, TGAImage &image, const TGAColor &color){
         }
     }
 }
-
+//use barycentric coordinates
 void triangle(Vec2i p0, Vec2i p1, Vec2i p2, TGAImage &image, const TGAColor &color){
+    if(p0.y == p1.y && p0.y == p2.y) return;
     //sort by y ascending; top p2; bot p0.
-    
-
     if(p0.y > p1.y) std::swap(p0, p1);
     if(p1.y > p2.y) std::swap(p1, p2);
     if(p0.y > p1.y) std::swap(p0, p1);
-    //from top to mid
-    Vec2i pm = Vec2i(p2.x, p2.y);
-    Vec2i pb = Vec2i(p2.x, p2.y);
     int y = p2.y;
     int x = p2.x;
-    int dym = p2.y - p1.y;
-    int dyb = p2.y - p0.y;
-    float deltam = (p1.x - p2.x)/(float)dym;
-    float deltab = (p0.x - p2.x)/(float)dyb;
+    float deltam = (p1.x - p2.x)/(float)(p2.y - p1.y);
+    float deltab = (p0.x - p2.x)/(float)(p2.y - p0.y);
+    //from top to mid
     for( ;y >= p1.y ;y--){
         int dy = p2.y - y;
-        pm.y--;
-        pb.y--;
-        pm.x = x + deltam * dy;
-        pb.x = x + deltab * dy;
-        line(pm, pb, image, color);
+        int xm = x + deltam * dy;
+        int xb = x + deltab * dy;
+        if(xm > xb) std::swap(xm, xb);
+        for(;xm<=xb;xm++){
+            image.set(xm,y,color);
+        }
     }
     //from mid to bot;
-    x = p1.x;
-    int xb = pb.x;
-    dym = p1.y - p0.y;
-    deltam = (p0.x - p1.x)/(float)dym;
-    for( ; y >= p0.y ; y--){
+    int xxb = x + deltab * (p2.y - p1.y);
+    deltam = (p0.x - p1.x)/(float)(p1.y - p0.y);
+    for(x = p1.x; y >= p0.y ; y--){
         int dy = p1.y - y;
-        pm.y--;
-        pb.y--;
-        pm.x = x + deltam * dy;
-        pb.x = xb + deltab * dy;
-        line(pm, pb, image, color);
+        int xm = x + deltam * dy;
+        int xb = xxb + deltab * dy;
+        if(xm > xb) std::swap(xm, xb);
+        for(;xm<=xb;xm++){
+            image.set(xm,y,color);
+        }
     }
 }
