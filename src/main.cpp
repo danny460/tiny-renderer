@@ -77,34 +77,19 @@ void line(Vec2i p0, Vec2i p1, TGAImage &image, const TGAColor &color){
 //use barycentric coordinates
 void triangle(Vec2i p0, Vec2i p1, Vec2i p2, TGAImage &image, const TGAColor &color){
     if(p0.y == p1.y && p0.y == p2.y) return;
-    //sort by y ascending; top p2; bot p0.
     if(p0.y > p1.y) std::swap(p0, p1);
     if(p1.y > p2.y) std::swap(p1, p2);
     if(p0.y > p1.y) std::swap(p0, p1);
-    int y = p2.y;
-    int x = p2.x;
-    float deltam = (p1.x - p2.x)/(float)(p2.y - p1.y);
-    float deltab = (p0.x - p2.x)/(float)(p2.y - p0.y);
-    //from top to mid
-    for( ;y >= p1.y ;y--){
-        int dy = p2.y - y;
-        int xm = x + deltam * dy;
-        int xb = x + deltab * dy;
-        if(xm > xb) std::swap(xm, xb);
-        for(;xm<=xb;xm++){
-            image.set(xm,y,color);
-        }
-    }
-    //from mid to bot;
-    int xxb = x + deltab * (p2.y - p1.y);
-    deltam = (p0.x - p1.x)/(float)(p1.y - p0.y);
-    for(x = p1.x; y >= p0.y ; y--){
-        int dy = p1.y - y;
-        int xm = x + deltam * dy;
-        int xb = xxb + deltab * dy;
-        if(xm > xb) std::swap(xm, xb);
-        for(;xm<=xb;xm++){
-            image.set(xm,y,color);
+    int minX = std::min(std::min(p0.x, p1.x), p2.x);
+    int maxX = std::max(std::max(p0.x, p1.x), p2.x);
+        
+    for(int x = minX ; x <= maxX; x++){
+        for(int y = p0.y; y <= p2.y; y++){
+            //float u = 
+            //float v =
+            if(u < 0 || v < 0 || u + v > 1) continue;
+            image.set(x, y, color);
         }
     }
 }
+
