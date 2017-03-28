@@ -1,10 +1,9 @@
 # Learning Notes
 
 ### Point in triangle test
-
-- Line sweeping
 - Sum of Angles
 - Same Side Technique
+- Line Sweeping
 - Barycentric Technique
     Executes faster, with a little more math involved. As three points of the triangle define a plane in the space, we'll need the basis vectors so we can give coordinate values to all points on the plane.
 

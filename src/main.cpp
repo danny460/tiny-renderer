@@ -4,21 +4,23 @@
 
 void test(TGAImage &image);
 void wireframe(Model *model, TGAImage &image);
+void flatshade(Model *model, TGAImage &image);
 void line(Vec2i p0, Vec2i p1, TGAImage &image, const TGAColor &color);
 void triangle(Vec2i p0, Vec2i p1, Vec2i p2, TGAImage &image, const TGAColor &color);
 
 const TGAColor white = TGAColor(255, 255, 255, 255);
 const TGAColor red   = TGAColor(255, 0,   0,   255);
 const TGAColor green = TGAColor(0,   255, 0,   255);
-const int width = 200;
-const int height = 200;
+const int width = 800;
+const int height = 800;
 
 int main(){
     TGAImage image(width, height, TGAImage::RGB);
-    Model model = Model("../obj/african_head.obj");
-    // wireframe(&model,image);
+    Model model = Model("../obj/african_head/african_head.obj");
     /***/
-    test(image);
+    // wireframe(&model,image);
+    // test(image);
+    flatshade(&model,image);
     /***/ 
     image.flip_vertically();
     image.write_tga_file("./output.tga");
@@ -42,12 +44,24 @@ void wireframe(Model *model, TGAImage &image){
     }
 }
 
+void flatshade(Model *model, TGAImage &image){
+    for (int i=0; i<model->nfaces(); i++) { 
+        std::vector<int> face = model->face(i); 
+        Vec2i screen_coords[3]; 
+        for (int j=0; j<3; j++) { 
+            Vec3f world_coords = model->vert(face[j]); 
+            screen_coords[j] = Vec2i((world_coords.x+1.)*width/2., (world_coords.y+1.)*height/2.); 
+        } 
+        triangle(screen_coords[0], screen_coords[1], screen_coords[2], image, TGAColor(rand()%255, rand()%255, rand()%255, 255)); 
+    }
+}
+
 void test(TGAImage &image){
     //test triangles
     Vec2i t0[3] = {Vec2i(10, 70),   Vec2i(50, 160),  Vec2i(70, 80)}; 
     Vec2i t1[3] = {Vec2i(180, 50),  Vec2i(150, 1),   Vec2i(70, 180)}; 
     Vec2i t2[3] = {Vec2i(180, 150), Vec2i(120, 160), Vec2i(130, 180)};
-    Vec2i t3[3] = {Vec2i(180, 150), Vec2i(120, 160), Vec2i(170, 100)};
+    Vec2i t3[3] = {Vec2i(180, 150), Vec2i(120, 150), Vec2i(170, 80)};
     triangle(t0[0], t0[1], t0[2], image, red); 
     triangle(t1[0], t1[1], t1[2], image, white); 
     triangle(t2[0], t2[1], t2[2], image, green);
@@ -82,14 +96,20 @@ void triangle(Vec2i p0, Vec2i p1, Vec2i p2, TGAImage &image, const TGAColor &col
     if(p0.y > p1.y) std::swap(p0, p1);
     int minX = std::min(std::min(p0.x, p1.x), p2.x);
     int maxX = std::max(std::max(p0.x, p1.x), p2.x);
-        
-    float k = (p1.x - p2.x)/(float)(p1.y - p2.y);
-    float denom = p0.x - p2.x - k * p0.y + k * p2.y;
-    
+    Vec2i v0 = p0 - p2;
+    Vec2i v1 = p1 - p2;
+    float dot00 = v0.dot(v0);
+    float dot01 = v0.dot(v1);
+    float dot11 = v1.dot(v1);
+    float det = 1./(dot00 * dot11 - dot01 * dot01);
+
     for(int x = minX ; x <= maxX; x++){
         for(int y = p0.y; y <= p2.y; y++){
-            float v = (float)(x - y * k - p2.x + k * p2.y)/denom;
-            float u = (float)(x- p2.x - v * (p0.x - p2.x))/(p1.x - p2.x);
+            Vec2i v2 = Vec2i(x, y) - p2;
+            float dot20 = v2.dot(v0);
+            float dot21 = v2.dot(v1);
+            float v = det * (dot11 * dot20 - dot01 * dot21);
+            float u = det * (dot00 * dot21 - dot01 * dot20);
             if(u < 0 || v < 0 || u + v > 1) continue;
             image.set(x, y, color);
         }
