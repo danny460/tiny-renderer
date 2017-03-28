@@ -15,7 +15,7 @@ const int height = 200;
 
 int main(){
     TGAImage image(width, height, TGAImage::RGB);
-    Model model = Model("../obj/african_head/african_head.obj");
+    Model model = Model("../obj/african_head.obj");
     // wireframe(&model,image);
     /***/
     test(image);
@@ -47,7 +47,7 @@ void test(TGAImage &image){
     Vec2i t0[3] = {Vec2i(10, 70),   Vec2i(50, 160),  Vec2i(70, 80)}; 
     Vec2i t1[3] = {Vec2i(180, 50),  Vec2i(150, 1),   Vec2i(70, 180)}; 
     Vec2i t2[3] = {Vec2i(180, 150), Vec2i(120, 160), Vec2i(130, 180)};
-    Vec2i t3[3] = {Vec2i(180, 160), Vec2i(120, 160), Vec2i(170, 170)};
+    Vec2i t3[3] = {Vec2i(180, 150), Vec2i(120, 160), Vec2i(170, 100)};
     triangle(t0[0], t0[1], t0[2], image, red); 
     triangle(t1[0], t1[1], t1[2], image, white); 
     triangle(t2[0], t2[1], t2[2], image, green);
@@ -83,10 +83,13 @@ void triangle(Vec2i p0, Vec2i p1, Vec2i p2, TGAImage &image, const TGAColor &col
     int minX = std::min(std::min(p0.x, p1.x), p2.x);
     int maxX = std::max(std::max(p0.x, p1.x), p2.x);
         
+    float k = (p1.x - p2.x)/(float)(p1.y - p2.y);
+    float denom = p0.x - p2.x - k * p0.y + k * p2.y;
+    
     for(int x = minX ; x <= maxX; x++){
         for(int y = p0.y; y <= p2.y; y++){
-            //float u = 
-            //float v =
+            float v = (float)(x - y * k - p2.x + k * p2.y)/denom;
+            float u = (float)(x- p2.x - v * (p0.x - p2.x))/(p1.x - p2.x);
             if(u < 0 || v < 0 || u + v > 1) continue;
             image.set(x, y, color);
         }
