@@ -45,14 +45,27 @@ void wireframe(Model *model, TGAImage &image){
 }
 
 void flatshade(Model *model, TGAImage &image){
+    float lightIntensity = 1.f;
+    float diffuseK = .5f;
+    float diffuseRGB[3] = {.5f, .5f, .5f};
+    Vec3f lightNorm = Vec3f(0, 0, -1.f);
     for (int i=0; i<model->nfaces(); i++) { 
         std::vector<int> face = model->face(i); 
         Vec2i screen_coords[3]; 
+        Vec3f world_coords[3];
         for (int j=0; j<3; j++) { 
-            Vec3f world_coords = model->vert(face[j]); 
-            screen_coords[j] = Vec2i((world_coords.x+1.)*width/2., (world_coords.y+1.)*height/2.); 
-        } 
-        triangle(screen_coords[0], screen_coords[1], screen_coords[2], image, TGAColor(rand()%255, rand()%255, rand()%255, 255)); 
+            Vec3f v = model->vert(face[j]); 
+            screen_coords[j] = Vec2i((v.x+1.)*width/2., (v.y+1.)*height/2.); 
+            world_coords[j] = v;
+        }
+        Vec3f v01 = world_coords[1] - world_coords[0];
+        Vec3f v02 = world_coords[2] - world_coords[0];
+        Vec3f n = v02.cross(v01);
+        n.normalize(); 
+        float intensity = diffuseK * n.dot(lightNorm);
+        if(intensity > 0){
+            triangle(screen_coords[0], screen_coords[1], screen_coords[2], image, TGAColor(intensity * 255, intensity * 255, intensity * 255, 255)); 
+        }
     }
 }
 
@@ -101,8 +114,8 @@ void triangle(Vec2i p0, Vec2i p1, Vec2i p2, TGAImage &image, const TGAColor &col
     float dot00 = v0.dot(v0);
     float dot01 = v0.dot(v1);
     float dot11 = v1.dot(v1);
+    //using determinant and invert matrix to solve 2 * 3 matrix for u and v
     float det = 1./(dot00 * dot11 - dot01 * dot01);
-
     for(int x = minX ; x <= maxX; x++){
         for(int y = p0.y; y <= p2.y; y++){
             Vec2i v2 = Vec2i(x, y) - p2;
