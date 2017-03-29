@@ -14,6 +14,8 @@ Model::Model(const char *filename) : verts_(), faces_() {
         std::getline(in, line);
         std::istringstream iss(line.c_str());
         char trash;
+        //string::compare(size_t pos, size_t len, const string& str)
+        //return 0 if equal
         if (!line.compare(0, 2, "v ")) {
             iss >> trash;
             Vec3f v;
@@ -23,14 +25,15 @@ Model::Model(const char *filename) : verts_(), faces_() {
             std::vector<int> f;
             int itrash, idx;
             iss >> trash;
-            while (iss >> idx >> trash >> itrash >> trash >> itrash) {
+            while (iss >> idx) {
                 idx--; // in wavefront obj all indices start at 1, not zero
                 f.push_back(idx);
+                while(iss.peek() == '/' && iss >> trash >> itrash);
             }
             faces_.push_back(f);
         }
     }
-    std::cerr << "# v# " << verts_.size() << " f# "  << faces_.size() << std::endl;
+    std::cerr << "[#] vertices# " << verts_.size() << ", faces# "  << faces_.size() << std::endl;
 }
 
 Model::~Model() {
