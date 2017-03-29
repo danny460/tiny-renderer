@@ -35,6 +35,7 @@
 .DS_Store
 
 # IDE
+obj/
 cmake-build-debug/
 CMakeLists.txt
 .idea
