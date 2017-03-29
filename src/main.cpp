@@ -47,7 +47,6 @@ void wireframe(Model *model, TGAImage &image){
 void flatshade(Model *model, TGAImage &image){
     float lightIntensity = 1.f;
     float diffuseK = .5f;
-    float diffuseRGB[3] = {.5f, .5f, .5f};
     Vec3f lightNorm = Vec3f(0, 0, -1.f);
     for (int i=0; i<model->nfaces(); i++) { 
         std::vector<int> face = model->face(i); 
@@ -62,7 +61,7 @@ void flatshade(Model *model, TGAImage &image){
         Vec3f v02 = world_coords[2] - world_coords[0];
         Vec3f n = v02.cross(v01);
         n.normalize(); 
-        float intensity = diffuseK * n.dot(lightNorm);
+        float intensity = lightIntensity * diffuseK * n.dot(lightNorm);
         if(intensity > 0){
             triangle(screen_coords[0], screen_coords[1], screen_coords[2], image, TGAColor(intensity * 255, intensity * 255, intensity * 255, 255)); 
         }
