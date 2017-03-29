@@ -52,33 +52,46 @@ Vec3f barycentric(Vec3f A, Vec3f B, Vec3f C, Vec3f P){
 
 
 //use barycentric coordinates
-void triangle(Vec3f *pts, TGAImage &image, float* zbuffer, const TGAColor &color){
+// void triangle(Vec3f *pts, TGAImage &image, float* zbuffer, const TGAColor &color){
+void triangle(Vec3f *pts, TGAImage &image, float* zbuffer, TGAImage &texture){
     if(pts[0].y == pts[1].y && pts[0].y == pts[2].y) return;
     int minY = std::min(std::min(pts[0].y, pts[1].y), pts[2].y);
     int maxY = std::max(std::max(pts[0].y, pts[1].y), pts[2].y);
     int minX = std::min(std::min(pts[0].x, pts[1].x), pts[2].x);
     int maxX = std::max(std::max(pts[0].x, pts[1].x), pts[2].x);
-    maxX = std::min(maxX, width - 1);
-    maxY = std::min(maxY, height -1);
+    maxX = std::min(maxX, image.get_width() - 1);
+    maxY = std::min(maxY, image.get_height() - 1);
     Vec3f P(0,0,0);     
     //using determinant and invert matrix to solve 2 * 3 matrix for u and v
     for(P.x = minX ; P.x <= maxX; P.x++){
         for(P.y = minY; P.y <= maxY; P.y++){
             Vec3f bc = barycentric(pts[0], pts[1], pts[2], P);
             if(bc.x < 0 || bc.y < 0 || bc.z < 0) continue;
-            int idx = P.x + P.y * width;
+            int idx = P.x + P.y * image.get_width();
             P.z = pts[0].z * bc.x + pts[1].z * bc.y + pts[2].z * bc.z;
             if(P.z > zbuffer[idx]){
                 zbuffer[idx] = P.z;
-                image.set(P.x, P.y, color);
+                // image.set(P.x, P.y, color);
+                int x = P.x;
+                int y = P.y;
+                image.set(P.x, P.y, texture.get(x, y));
             }
         }
     }
 }
 
 int main(){
+    const char* texture_filename = "../obj/african_head/african_head_diffuse.tga";
+    const char* model_filename = "../obj/african_head/african_head.obj";
     TGAImage image(width, height, TGAImage::RGB);
-    Model model = Model("../obj/african_head/african_head.obj");
+    TGAImage diffuse_texture;
+
+    if(!diffuse_texture.read_tga_file(texture_filename)){
+        std::cerr << "[ERR] reading texture file failed \"" << texture_filename << "\""<< std::endl;
+        return 0;
+    }
+    diffuse_texture.write_tga_file("./haha.tga");
+    Model model = Model(model_filename);
     /***/
     float *zbuffer = new float[width * height];
     for (int i=width*height; i--; zbuffer[i] = -std::numeric_limits<float>::max());
@@ -86,7 +99,8 @@ int main(){
     float diffuseK = .5f;
     Vec3f lightNorm = Vec3f(0, 0, -1.f);
     for (int i=0; i<model.nfaces(); i++) { 
-        std::vector<int> face = model.face(i); 
+        std::vector<int> face = model.face(i);
+        // std::vector<int> face_t = model.face(i);  
         Vec3f screen_coords[3]; 
         Vec3f world_coords[3];
         for (int j=0; j<3; j++) { 
@@ -100,7 +114,8 @@ int main(){
         n.normalize(); 
         float intensity = lightIntensity * diffuseK * n.dot(lightNorm);
         if(intensity > 0){
-            triangle(screen_coords, image, zbuffer, TGAColor(intensity * 255, intensity * 255, intensity * 255, 255)); 
+            triangle(screen_coords, image, zbuffer, diffuse_texture);
+            //triangle(screen_coords, image, zbuffer, TGAColor(intensity * 255, intensity * 255, intensity * 255, 255)); 
         }
     }
     /***/ 
