@@ -13,7 +13,7 @@ clear:
 tgaimage.o: tgaimage.cpp tgaimage.h
 	$(CC) $(CFLAGS) tgaimage.cpp
 
-model.o: model.cpp model.h geometry.h
+model.o: model.cpp model.h geometry.h tgaimage.h
 	$(CC) $(CFLAGS) model.cpp
 
 main.o: main.cpp tgaimage.h model.h
