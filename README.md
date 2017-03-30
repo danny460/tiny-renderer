@@ -12,4 +12,8 @@ my implementation of [ssloy/tinyrenderer](https://github.com/ssloy/tinyrenderer)
 
 **with zbuffer**
 
-![w zbuffer](/out/zbuffer.png "flat shading");
+![w zbuffer](/out/zbuffer.png "w zbuffer")
+
+**diffuse texture mapping
+
+![diffuse](/out/diffuse.png "diffuse texture mappings")
