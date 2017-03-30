@@ -7,16 +7,20 @@
 class Model {
 private:
 	std::vector<Vec3f> verts_;
-	std::vector<Vec2f> verts_t_;
-	std::vector<std::vector<int> > faces_;
-	std::vector<std::vector<int> > faces_t_;
+	std::vector<Vec3f> norms_;
+	std::vector<Vec2f> tcoords_;
+	std::vector<std::vector<Vec3i> > faces_;
 public:
 	Model(const char *filename);
 	~Model();
 	int nverts();
+	int nnorms();
+	int ntcoords();
 	int nfaces();
 	Vec3f vert(int i);
-	std::vector<int> face(int idx);
+	Vec3f norm(int i);
+	Vec2f tcoord(int i);
+	std::vector<Vec3i> face(int idx);
 };
 
 #endif //__MODEL_H__
