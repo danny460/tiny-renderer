@@ -93,3 +93,32 @@ Vec3f Model::norm(int i) {
 Vec2f Model::tcoord(int i) {
     return tcoords_[i];
 }
+
+bool Model::load_texture(const char* filename, const char* option){
+    std::string optionStr(option);
+    TGAImage* map = NULL;
+    if( optionStr == "diffuse") map = &diffusemap_;
+    else{
+        std::cerr << "[ERR]: unknown option for texture loading: " << "\"" <<  option << "\"" << std::endl;
+        return false;
+    }
+    if(!map->read_tga_file(filename)){
+        std::cerr << "[ERR]: failed to load texture: " << "\"" <<  filename << "\"" << std::endl;
+        return false;
+    }
+    map->flip_vertically();
+    return true;
+}
+
+int Model::get_texture_width(const char* option){
+    return diffusemap_.get_width();
+};
+int Model::get_texture_height(const char* option){
+    return diffusemap_.get_height();
+};
+
+TGAColor Model::get_diffuse(const int x, const int y){
+    return diffusemap_.get(x, y);
+}
+
+
