@@ -99,11 +99,10 @@ int main(){
     float *zbuffer = new float[width * height];
     for (int i=width*height; i--; zbuffer[i] = -std::numeric_limits<float>::max());
     float lightIntensity = 1.f;
-    float diffuseK = .5f;
+    float diffuseK = .9f;
     Vec3f lightNorm = Vec3f(0, 0, -1.f);
     for (int i=0; i<model->nfaces(); i++) { 
         std::vector<Vec3i> face = model->face(i);
-        // std::vector<int> face_t = model->face(i);  
         Vec3f screen_coords[3]; 
         Vec2f texture_coords[3]; 
         Vec3f world_coords[3];
@@ -123,23 +122,7 @@ int main(){
             triangle(screen_coords, texture_coords, zbuffer, image, intensity);
         }
     }
-    // wireframe
-    // for (int i=0; i<model->nfaces(); i++) { 
-    //     std::vector<Vec3i> face = model->face(i);
-    //     // std::vector<int> face_t = model->face(i);  
-    //     Vec3f screen_coords[3];
-    //     Vec2i vert[3]; 
-    //     for (int j=0; j<3; j++) { 
-    //         Vec3f v = model->vert(face[j][0]);
-    //         screen_coords[j] = world2screen(v); 
-    //         vert[j] = Vec2i(screen_coords[j].x,screen_coords[j].y);
-    //     }
-
-    //     line(vert[0],vert[1],image,white);
-    //     line(vert[0],vert[2],image,white);
-    //     line(vert[2],vert[1],image,white);
-    // }
-    /***/ 
+    
     image.flip_vertically();
     image.write_tga_file("./output.tga");
     return 0;
