@@ -1,14 +1,19 @@
 OUTPUT = output.tga
-OBJS = main.o tgaimage.o model.o
+OBJS = main.o tgaimage.o geometry.o model.o 
 CC = g++
 DEBUG = -g
-CFLAGS = -Wall -c $(DEBUG)
-LFLAGS = -Wall $(DEBUG)
+CPP11 = -std=c++11
+CFLAGS = -Wall -c $(DEBUG) $(CPP11) 
+LFLAGS = -Wall $(DEBUG) $(CPP11)
+
 
 all: clear tgaimage.o model.o main.o renderer run open
 
 clear: 
 	printf "\033c"
+
+geometry.o: geometry.cpp geometry.h
+	$(CC) $(CFLAGS) geometry.cpp
 
 tgaimage.o: tgaimage.cpp tgaimage.h
 	$(CC) $(CFLAGS) tgaimage.cpp
