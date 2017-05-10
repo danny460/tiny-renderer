@@ -2,7 +2,6 @@
 #define __GEOMETRY_H__
 
 #include <cmath>
-#include <vector>
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -58,21 +57,23 @@ const int DEFAULT_ALLOC = 4;
 
 class Matrix {
 	//
-	std::vector<std::vector<float>> m;
+	std::vector< std::vector<float> > m;
 	int rows, cols;
 
 	public:
-		Matrix(int r = DEFUALT_ALLOC, int c = DEFAULT_ALLOC);
+		Matrix(int r = DEFAULT_ALLOC, int c = DEFAULT_ALLOC);
 		inline int nrows();
 		inline int ncols();
 
 		static Matrix indentity(int dimension);
-		std::vector<float>& operator[](cosnt int i);
+
+		std::vector<float>& operator[](const int i);
 		Matrix operator*(const Matrix& a);
+
 		Matrix transpose();
 		Matrix inverse();
 
 		friend std::ostream& operator<<(std::ostream& s, Matrix& m);
-}
+};
 
 #endif //__GEOMETRY_H__
