@@ -65,7 +65,7 @@ class Matrix {
 		inline int nrows();
 		inline int ncols();
 
-		static Matrix indentity(int dimension);
+		static Matrix identity(int dimension);
 
 		std::vector<float>& operator[](const int i);
 		Matrix operator*(const Matrix& a);

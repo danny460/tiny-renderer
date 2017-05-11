@@ -14,7 +14,7 @@ int Matrix::ncols(){
     return cols;
 }
 
-Matrix Matrix::indentity(int dimension){
+Matrix Matrix::identity(int dimension) {
     Matrix I(dimension, dimension);
     for(int i = 0 ; i < dimension; i++){
         for(int j = 0 ; j < dimension; j++){
