@@ -35,12 +35,14 @@
 .DS_Store
 
 # IDE
-obj/
+
 cmake-build-debug/
 CMakeLists.txt
 .idea
 .vscode
 
-# lib
-test/catch.hpp
+# Project files
+models/
+include/catch.hpp
+bin/
 
