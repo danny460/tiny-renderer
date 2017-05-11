@@ -26,7 +26,7 @@ Matrix Matrix::identity(int dimension) {
 
 std::vector<float>& Matrix::operator[](const int i){
     //make sure in range
-    assert(i > 0 && i < rows);
+    assert(i >= 0 && i < rows);
     return m[i];
 }
 

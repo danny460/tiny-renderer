@@ -62,8 +62,9 @@ class Matrix {
 
 	public:
 		Matrix(int r = DEFAULT_ALLOC, int c = DEFAULT_ALLOC);
-		inline int nrows();
-		inline int ncols();
+		
+		int nrows();	
+		int ncols();
 
 		static Matrix identity(int dimension);
 

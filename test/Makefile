@@ -1,22 +1,36 @@
-INC_DIR = ../src/
-OBJS = geometry.test.o
+INC_DIR := ../include
+BIN_DIR := ../bin
+BLD_DIR := ../build
+SRC_DIR := ../src
+
 CC = g++
-DEBUG = -g
-CPP11 = -std=c++11
-INCLUDE = -I$(INC_DIR)
-CFLAGS = -Wall -c $(DEBUG) $(CPP11) $(INCLUDE)
-LFLAGS = -Wall $(DEBUG) $(CPP11)
+STD11 = -std=c++11
+CFLAGS = -Wall -g -c $(STD11) 
+LFLAGS = -Wall -g 
+INC := -I$(INC_DIR)
 
-all: clear compile link run
+CPP_EXT := .cpp
+OBJ_EXT := .o
 
-clear: 
-	printf "\033c"
+TARGET := $(BIN_DIR)/tester
+TESTSRC := geometry.test.cpp
+DEPS := $(patsubst %.test$(CPP_EXT), %$(CPP_EXT) , $(TESTSRC))
+ALL := $(DEPS) $(TESTSRC) 
+OBJECTS := $(patsubst %$(CPP_EXT), $(BLD_DIR)/%$(OBJ_EXT) , $(ALL))
 
-compile: geometry.test.cpp catch.hpp ../src/geometry.h
-	$(CC) $(CFLAGS) geometry.test.cpp
+$(TARGET): $(OBJECTS)
+	@printf "\033c"
+	@echo "Linking.."
+	@echo "$(CC) $(LFLAGS) $^ -o $(TARGET)"; $(CC) $^ -o $(TARGET)
+	@echo "Cleaning..."; rm -r $(OBJECTS) 
+	@echo "Running..."; ./$(TARGET)
 
-link: $(OBJS)
-	$(CC) $(LFLAGS) $(OBJS) -o test.out	
+$(BLD_DIR)/%.test$(OBJ_EXT): %.test$(CPP_EXT)
+	@mkdir -p $(BLD_DIR)
+	@echo " $(CC) $(CFLAGS) $(INC) -o $@ $<"; $(CC) $(CFLAGS) $(INC) -o $@ $<
 
-run: test.out
-	./test.out
+$(BLD_DIR)/%$(OBJ_EXT): $(SRC_DIR)/%$(CPP_EXT)
+	@mkdir -p $(BLD_DIR)
+	@echo " $(CC) $(CFLAGS) $(INC) -o $@ $<"; $(CC) $(CFLAGS) $(INC) -o $@ $<
+
+		
