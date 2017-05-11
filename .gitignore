@@ -41,3 +41,6 @@ CMakeLists.txt
 .idea
 .vscode
 
+# lib
+test/catch.hpp
+
