@@ -88,8 +88,8 @@ void triangle(Vec3f *pts, Vec2f *texture_coords, float* zbuffer, TGAImage &image
 }
 
 int main(){
-    const char* diffusemap_filename = "../model/african_head/african_head_diffuse.tga";
-    const char* model_filename = "../model/african_head/african_head.obj";
+    const char* diffusemap_filename = "models/african_head/african_head_diffuse.tga";
+    const char* model_filename = "models/african_head/african_head.obj";
     TGAImage image(width, height, TGAImage::RGB);
     TGAImage diffuse_texture;
 
