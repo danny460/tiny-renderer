@@ -73,6 +73,9 @@ class Matrix {
 
 		Matrix transpose();
 		Matrix inverse();
+		float det();
+		float minor(int r, int c);
+		int cofactor(int r, int c);
 
 		friend std::ostream& operator<<(std::ostream& s, Matrix& m);
 };

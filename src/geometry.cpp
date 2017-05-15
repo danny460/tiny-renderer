@@ -50,44 +50,65 @@ Matrix Matrix::operator*(const Matrix& a){
 
 
 Matrix Matrix::transpose(){
-    Matrix T(rows, cols);
+    Matrix result(rows, cols);
     for(int i = 0 ; i < rows; i++){
         for(int j = 0 ; j < cols; j++){
-            T[i][j] = m[j][i];
+            result[i][j] = m[j][i];
         }
     }
-    return T;
+    return result;
 }
 
-Matrix Matrix::inverse(){
-    //must be square matrix
-    assert(rows == cols);
-    
-    Matrix augmented(rows,  cols * 2);
-    Matrix result(rows, cols);
+//exploring cholskey decomposition
 
+Matrix Matrix::inverse(){
+    assert(rows == cols);
+    float d = det();
+    if(d == 0){
+        throw "not invertible";
+    }
+    float denom = 1 / d;
+    Matrix result(rows, cols);
     for(int i = 0 ; i < rows; i++){
         for(int j = 0 ; j < cols; j++){
-            augmented[i][j] = m[i][j];
+            result.m[i][j] = denom * cofactor(j, i) * minor(j, i);
         }
     }
-    for(int i = 0 ; i < cols; i++){
-        augmented[i][i + cols] = 1.f;
-    }
-    //
-    for(int i = 0; i < rows; i++){
-        for(int j = 0; j < cols; j++){
-
-        }
-    }
-
-    for(int i = 0; i < rows; i++){
-        for(int j = 0; j < cols; j++){
-            result[i][j] = augmented[i][j + cols];
-        }
-    }
-    
     return result;
+}
+
+int Matrix::cofactor(int r, int c){
+    return (r + c) % 2 == 0 ? 1 : -1;
+}
+
+float Matrix::minor(int r, int c){
+    assert(rows == cols);
+    if(rows == 1){
+        throw "cannot get minor of 1 X 1 matrix";
+    }
+    Matrix temp(rows - 1, cols - 1);
+    int offset_r = 0;
+    for(int i = 0 ; i < rows - 1; i++){
+        int offset_c = 0;
+        if( i == r) offset_r = 1;
+        for(int j = 0 ; j < cols - 1; j++){
+            if( j == c) offset_c = 1;
+            temp[i][j] = m[i + offset_r][j + offset_c];
+        }
+    }
+    return temp.det();
+}
+
+float Matrix::det(){
+    assert(rows == cols && rows > 0);
+    if(rows == 1){
+        return m[0][0];
+    }
+    float d = 0.f;
+    for(int i = 0 ; i < cols ; i++){
+        d += m[0][i] * cofactor(0, i) * minor(0, i);
+    }
+    return d;
 }
 
 
