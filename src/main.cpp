@@ -8,6 +8,7 @@ const TGAColor green = TGAColor(0,   255, 0,   0);
 const int width = 1024;
 const int height = 1024;
 
+Vec3f camera = Vec3f(0, 0, -3.f);
 Model *model = NULL;
 const char* DIFFUSE = "diffuse";
 
@@ -34,9 +35,18 @@ void line(Vec2i p0, Vec2i p1, TGAImage &image, const TGAColor &color){
 }
 
 Vec3f world2screen(Vec3f p){
-    int x = .5f + (p.x + 1.f)*width/2;
-    int y = .5f + (p.y + 1.f)*height/2;
+    int x = .5f + (p.x + 1.f) * width/2;
+    int y = .5f + (p.y + 1.f) * height/2;
     return Vec3f(x , y, p.z);
+}
+
+Matrix toMatrix(Vec3f p){
+    Matrix m = Matrix(4, 1);
+    for(int i = 0; i < 3; i++){
+        m[i][0] = p[i];
+    }
+    m[4][0] = 0.f;
+    return m;
 }
 
 // A,B,C from triangle, P is the point to test
@@ -92,6 +102,7 @@ int main(){
     const char* model_filename = "models/african_head/african_head.obj";
     TGAImage image(width, height, TGAImage::RGB);
     TGAImage diffuse_texture;
+    Matrix projectionMatrix = Matrix::identity(4);
 
     model = new Model(model_filename);
     if(!model->load_texture(diffusemap_filename, DIFFUSE)) return 0;
